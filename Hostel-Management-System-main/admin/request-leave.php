@@ -1,0 +1,133 @@
+<?php
+session_start();
+include('includes/config.php');
+include('includes/checklogin.php');
+check_login();
+//code for update status
+if(isset($_POST['status']))
+{
+	$status=$_POST['status'];
+	$sid=$_POST['id'];
+	if($status=='Approved')
+	{
+		$query="UPDATE `leavereq` SET `status`=? WHERE `id`=?";
+		$stmt = $mysqli->prepare($query);
+		$rc=$stmt->bind_param('si',$status,$sid);
+		$stmt->execute();
+		echo"<script>alert('Leave Request Approved');</script>";
+	}
+	else
+	{
+		$query="UPDATE `leavereq` SET `status`=? WHERE `id`=?";
+		$stmt = $mysqli->prepare($query);
+		$rc=$stmt->bind_param('si',$status,$sid);
+		$stmt->execute();
+		echo"<script>alert('Leave Request Rejected');</script>";
+	}
+
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="theme-color" content="#3e454c">
+	<title>Request Leave</title>
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/dataTables.bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-social.css">
+	<link rel="stylesheet" href="css/bootstrap-select.css">
+	<link rel="stylesheet" href="css/fileinput.min.css">
+	<link rel="stylesheet" href="css/awesome-bootstrap-checkbox.css">
+	<link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+<?php include('includes/header.php');?>
+	<div class="ts-main-content">
+		<?php include('includes/sidebar.php');?>
+		<div class="content-wrapper">
+			<div class="container-fluid">
+
+				<div class="row">
+					<div class="col-md-12">
+					
+						<h1 class="page-title">Request Leave</h1>
+
+						<div class="row">
+							<div class="col-md-12">
+								<div class="panel panel-primary">
+									<div class="panel-heading">Leave Request Info</div>
+									<div class="panel-body">
+								<table id="zctb" class="table table-bordered " cellspacing="0" width="100%">
+								<thead>		
+								
+										<tr>
+											<th>Id</th>	
+											<th>Name</th>											
+											<th>Class</th>
+											<th>Contact</th>											
+											<th>Email</th>											
+											<th>Leave Date</th>									
+											<th>Action</th>
+											<th>Status</th>
+										</tr>
+									
+								</thead>
+
+								<tbody>
+<?php	
+$aid=$_SESSION['id'];
+$ret="select * from leavereq";
+$stmt= $mysqli->prepare($ret) ;
+$stmt->execute() ;//ok
+$res=$stmt->get_result();
+$cnt=1;
+while($row=$res->fetch_object())
+{
+  	?>
+<tr>
+<td><?php echo $cnt;;?></td>
+<td><?php echo $row->name;?></td>
+<td><?php echo $row->class;?></td>
+<td><?php echo $row->contact;?></td>
+<td><?php echo $row->email;?></td>
+<td><?php echo $row->leavedate;?></td>
+<td><a href="request-status.php?id=<?php echo $row->id;?>"><i class="fa fa-eye"></i></a></td>
+<td><?php echo $row->status;?></td>
+</tr>
+									<?php
+$cnt=$cnt+1;
+									 } ?>
+											
+										
+									</tbody>
+
+								</table>
+									</div>
+									</div>
+								</div>
+							</div>
+						</div>
+							</div>
+						</div>
+					</div>
+				</div> 	
+			</div>
+		</div>
+	</div>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap-select.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
+	<script src="js/dataTables.bootstrap.min.js"></script>
+	<script src="js/Chart.min.js"></script>
+	<script src="js/fileinput.js"></script>
+	<script src="js/chartData.js"></script>
+	<script src="js/main.js"></script>
+</body>
+</html>
